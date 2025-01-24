@@ -25,6 +25,10 @@ public class Student {
         return studentNum;
     }
 
+    public static void deacreaseStudentNum() {
+        studentNum--;
+    }
+
     public int getId() {
         return id;
     }
