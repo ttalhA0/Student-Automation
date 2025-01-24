@@ -92,7 +92,7 @@ public class Main {
             System.out.println("Enter the gpa:");
             newStudent.gpa = inputClass.nextDouble();
 
-            inputClass.close();
+            //inputClass.close();
 
 
             System.out.println("Student added successfully.");
@@ -100,7 +100,7 @@ public class Main {
             return newStudent;
         } catch (Exception e) {
             System.out.println("Invalid input. Please try again.");
-            inputClass.close();
+            //inputClass.close();
             // Todo:
             return null;
         }
