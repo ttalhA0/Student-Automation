@@ -21,7 +21,7 @@ public class Student {
         id = 100 + studentNum;
     }
 
-    public int getStudentNum() {
+    public static int getStudentNum() {
         return studentNum;
     }
 
