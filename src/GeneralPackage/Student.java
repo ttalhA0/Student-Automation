@@ -1,15 +1,16 @@
 package GeneralPackage;
 
 public class Student {
+
     private static int studentNum = 0;
     private int id;
-    String name;
+    String name; // Todo: bunlar neden private değil
     String surname;
     double gpa;
 
     public Student() {
 
-        studentNum++;
+        studentNum++; // Todo: yeni bir nesne oluşturduğumuzda burada artırıyoruz, ayrıca main metodunda da switch içerisinde artırıyoruz gibi, sayılar doğru artıyor mu?
         id = 100 + studentNum;
     }
 

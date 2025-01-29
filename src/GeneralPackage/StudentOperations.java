@@ -3,6 +3,7 @@ package GeneralPackage;
 import java.util.Locale;
 import java.util.Scanner;
 
+// Todo: Student'a dair metotlar neden ayrı bir class'ta ? Student içerisinde olması gerekmez mi?
 public class StudentOperations {
 
     public static Student addStudent() {
@@ -13,6 +14,7 @@ public class StudentOperations {
         try {
             System.out.println("Enter the student name:");
             newStudent.name = inputClass.nextLine();
+            // Todo: E burda name alanına doğrudan erişmişiz. Encapsulation nerde:)
 
             System.out.println("Enter the student surname: ");
             newStudent.surname = inputClass.nextLine();
@@ -24,6 +26,7 @@ public class StudentOperations {
             System.out.println("Student added successfully.");
             System.out.println("\n\n\n");
             return newStudent;
+            // Todo: Bu metot bir öğrenci oluşturuyor ama onu bir yere eklediği yok gibi, isimlendirme yanlış yönlendiriyor, ne dersin?
         } catch (Exception e) {
             System.out.println("Invalid input. Please try again.");
             Student.deacreaseStudentNum();
@@ -38,6 +41,7 @@ public class StudentOperations {
         int searchChoice;
         int studentFind = 0;
 
+        // Todo: Bu kısım ayrı bir metoda alınamaz mı? kodun okunurluğunu artırır gibi geldi bana
         System.out.println("1) By name ");
         System.out.println("2) By surname ");
         System.out.println("3) By id ");
@@ -46,9 +50,11 @@ public class StudentOperations {
         searchChoice = inputSearch.nextInt();
 
 
+        // Todo: Aynı şekilde burası da ayrılabilir
         switch (searchChoice) {
 
             case 1:
+                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 System.out.println("Enter the student name: ");
                 String searchName = inputSearch.next();
                 System.out.println("\n\n");
@@ -63,6 +69,7 @@ public class StudentOperations {
                 break;
 
             case 2:
+                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 System.out.println("Enter the student surname: ");
                 String searchSurname = inputSearch.next();
                 System.out.println("\n\n");
@@ -77,6 +84,7 @@ public class StudentOperations {
                 break;
 
             case 3:
+                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 System.out.println("Enter the student ID: ");
                 try {
                     int searchID = inputSearch.nextInt();
@@ -86,6 +94,10 @@ public class StudentOperations {
                     System.out.println("Name   Surname   ID   GPA");
                     for (int i = 0; i < Student.getStudentNum(); i++) {
                         if (searchID == students[i].getId()) {
+                            /* Todo: Bu kısmın showStudents() metodundan ne farkı var
+                            Şöyle bir şey nasıl olurdu: showStudent() diye bir metodumuz olsa
+                            showStudents da bunu kullansa
+                             */
                             System.out.println("" + students[i].name + "   " + students[i].surname + "   " + students[i].getId() + "   " + students[i].gpa);
                             studentFind = 1;
                         }
@@ -126,6 +138,7 @@ public class StudentOperations {
         double minGPA;
 
         try {
+            // Todo: girdi alma işi ayrı metot olmalı gibi, ne dersin
             System.out.println("Enter the max gpa:");
             maxGPA = inputGpa.nextDouble();
             System.out.println("Enter the min gpa:");
@@ -137,6 +150,7 @@ public class StudentOperations {
                 System.out.println("The max gpa cannot be less than min gpa. Please try again.");
             }
             else {
+                // Todo: Bu kısmın showStudents() metodundan ne farkı var
                 System.out.println("Name   Surname   ID   GPA");
                 for (int i = 0; i < studentNumber; i++) {
                     if (minGPA <= students[i].gpa && students[i].gpa <= maxGPA) {
