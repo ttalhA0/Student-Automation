@@ -148,8 +148,7 @@ public class StudentOperations {
                 System.out.println("The gpa cannot be less than 0 and greater than 4. Please try again.");
             } else if (maxGPA < minGPA) {
                 System.out.println("The max gpa cannot be less than min gpa. Please try again.");
-            }
-            else {
+            } else {
                 // Todo: Bu kısmın showStudents() metodundan ne farkı var
                 System.out.println("Name   Surname   ID   GPA");
                 for (int i = 0; i < studentNumber; i++) {
