@@ -8,10 +8,9 @@ public class Student {
 
     private static int studentNum = 0;
     private int id;
-    private String name; // Todo: bunlar neden private değil
+    private String name;
     private String surname;
     private double gpa;
-
 
     public Student() {
         studentNum++; // Todo: yeni bir nesne oluşturduğumuzda burada artırıyoruz, ayrıca main metodunda da switch içerisinde artırıyoruz gibi, sayılar doğru artıyor mu?
@@ -26,47 +25,6 @@ public class Student {
         id = 100 + studentNum;
     }
 
-    public static int getStudentNum() {
-        return studentNum;
-    }
-
-    public static void deacreaseStudentNum() {
-        studentNum--;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String newName) {
-        name = newName.toUpperCase();
-    }
-
-    public String  getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String newSurname) {
-        surname = newSurname.toUpperCase();
-    }
-
-    public double getGpa() {
-        return gpa;
-    }
-
-    public void setGpa(double newGpa) {
-        if (newGpa >= 0 && newGpa <= 4) {
-            gpa = newGpa;
-        }
-        else {
-            System.out.println("Invalid GPA");
-        }
-    }
-
     public static void createStudent(ArrayList<Student> students) {
         Scanner scan = new Scanner(System.in);
         scan.useLocale(Locale.US);
@@ -75,7 +33,6 @@ public class Student {
         try {
             System.out.println("Enter the student name:");
             newStudent.setName(scan.nextLine());
-            // Todo: E burda name alanına doğrudan erişmişiz. Encapsulation nerde:)
 
             System.out.println("Enter the student surname: ");
             newStudent.setSurname(scan.nextLine());
@@ -85,12 +42,9 @@ public class Student {
 
             Student.addStudent(students, newStudent);
 
-
-            // Todo: Bu metot bir öğrenci oluşturuyor ama onu bir yere eklediği yok gibi, isimlendirme yanlış yönlendiriyor, ne dersin?
         } catch (Exception e) {
             System.out.println("Invalid input. Please try again.");
             Student.deacreaseStudentNum();
-
         }
     }
 
@@ -99,27 +53,24 @@ public class Student {
         System.out.println("Student is created and added successfully.\n\n\n");
     }
 
-
-
     public static void showAllStudents(ArrayList<Student> students) {
         printShowStudentTitle();
 
         for (Student student : students) {
             showStudent(student);
         }
-
-        System.out.println("\n\n\n");
+        System.out.println("\n\n\n"); // Todo (MK): addGap gibi bir metoda taşınabilir (her yerde kullanılan bir yapı bu. Yarın desem ki 3 değil 2 satır boşluk olsun, sadece bir yerde değiştirmen yeterli olur bu sayede)
     }
 
     public static void showStudent(Student student) {
-        System.out.println("" + student.getName() + "   " + student.getSurname() + "   " + student.getId() + "   " + student.getGpa());
+        // Todo (MK): printShowStudentTitle metodu buraya taşınabilir, yukarıdaki gibi (sonuçta aynı işin ayrılmaz bir parçası)
+        System.out.println(student.getName() + "   " + student.getSurname() + "   " + student.getId() + "   " + student.getGpa());
     }
 
     public static void searchByGpaRange(ArrayList<Student> students) {
         double maxGPA;
         double minGPA;
 
-        // Todo: girdi alma işi ayrı metot olmalı gibi, ne dersin
         System.out.println("Enter the max gpa: ");
         maxGPA = inputGpa();
         System.out.println("Enter the min gpa: ");
@@ -130,7 +81,6 @@ public class Student {
         } else if (maxGPA < minGPA) {
             System.out.println("The max gpa cannot be less than min gpa. Please try again.");
         } else {
-            // Todo: Bu kısmın showStudents() metodundan ne farkı var
             printShowStudentTitle();
             for (Student student : students) {
                 if (minGPA <= student.getGpa() && student.getGpa() <= maxGPA) {
@@ -138,7 +88,6 @@ public class Student {
                 }
             }
         }
-
     }
 
     public static double inputGpa() {
@@ -155,7 +104,7 @@ public class Student {
         }
     }
 
-    public static void addTestStudent(ArrayList<Student> students) {
+    public static void addTestStudents(ArrayList<Student> students) {
         students.add(new Student("ALİ", "MUTLU", 3.50d));
         students.add(new Student("VELİ", "YILDIZ", 3.12d));
         students.add(new Student("SERCAN", "ŞEKER", 2.46d));
@@ -184,6 +133,7 @@ public class Student {
                 return inputChoice();
             }
         } catch (Exception e) {
+            // Todo (MK): Buraya girdiği oluyor mu? Eğer girmiyorsa kaldıralım, giriyorsa da yukarıyla aynı olduğundan kod tekrarı var (metoda çekelim)
             System.out.println("Geçersiz giriş! Lütfen tam sayı girin.");
             scan.nextLine();
             return inputChoice();
@@ -193,26 +143,25 @@ public class Student {
     public static int selectMenuChoice(ArrayList<Student> students, int choice) {
         switch (choice) {
             case 1:
-                // Todo: addStudent neden listeye ekleme yapmıyor? sonradan biz ekliyorsak bu metot isminin hakkını vermemiş olmuyor mu
                 createStudent(students);
-                return 0;
+                break;
             case 2:
                 int searchingChoice = inputSearchingChoice();
                 selectSearchingChoice(students,searchingChoice);
-                return 0;
+                break;
             case 3:
                 showAllStudents(students);
-                return 0;
+                break;
             case 4:
                 searchByGpaRange(students);
-                return 0;
+                break;
             case 5:
                 return  1;
             default:
                 System.out.println("Invalid choice. Please try again.");
-                return 0;
-
+                break;
         }
+        return 0;
     }
 
     public static int inputSearchingChoice() {
@@ -223,26 +172,19 @@ public class Student {
         return inputChoice();
     }
     // Todo: searchStudent() metodunda switch case kısmında kaldım.
-
+    // Todo (MK): yukarıdaki todoyu sen koymuşsun galiba, anlaşılması için Todo (TT): mesaj şeklinde gidelim
     public static void selectSearchingChoice(ArrayList<Student> students,int searchChoice) {
-        int studentFind = 0;
+        int studentFind;
         switch (searchChoice) {
-
             case 1:
-                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 studentFind = searchingByName(students);
                 break;
-
             case 2:
-                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 studentFind = searchingBySurname(students);
                 break;
-
             case 3:
-                // Todo: sanki ayrı metot olması okunurluğu artıracak gibi?
                 studentFind = searchingById(students);
                 break;
-
             default:
                 System.out.println("Invalid choice. Please try again.");
                 studentFind = 1;
@@ -259,6 +201,7 @@ public class Student {
         System.out.println("Name   Surname   ID   GPA");
     }
 
+    // Todo (MK): search metotları Student dönsün
     public static int searchingByName(ArrayList<Student> students) {
         int studentFind = 0;
         Scanner scan = new Scanner(System.in);
@@ -270,6 +213,7 @@ public class Student {
 
         Student.printShowStudentTitle();
 
+        // Todo (MK): bulunan öğrenciyi ekrana bastırmak farklı bir iş
         for (Student student : students) {
             if (searchName.equals(student.name)) {
                 Student.showStudent(student);
@@ -322,6 +266,48 @@ public class Student {
         }
         return studentFind;
     }
+
+    public static int getStudentNum() {
+        return studentNum;
+    }
+
+    public static void deacreaseStudentNum() {
+        studentNum--;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String newName) {
+        name = newName.toUpperCase();
+    }
+
+    public String  getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String newSurname) {
+        surname = newSurname.toUpperCase();
+    }
+
+    public double getGpa() {
+        return gpa;
+    }
+
+    public void setGpa(double newGpa) {
+        if (newGpa >= 0 && newGpa <= 4) {
+            gpa = newGpa;
+        }
+        else {
+            System.out.println("Invalid GPA");
+        }
+    }
+
 
 }
 
