@@ -1,4 +1,4 @@
-package GeneralPackage;
+package studentautomation;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
