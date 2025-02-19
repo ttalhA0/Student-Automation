@@ -1,11 +1,8 @@
 package studentautomation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
-public class Student {
+public class Student implements Cloneable{
 
     private static int studentNum = 0;
     private int id;
@@ -19,16 +16,39 @@ public class Student {
         id = 100 + studentNum;
     }
 
-    public Student(String name, String surname, double gpa, List<LessonType> lessons) {
+    public Student(String name, String surname, int id, double gpa, List<LessonType> lessons) {
         this.name = name;
         this.surname = surname;
         this.gpa = gpa;
         studentNum++;
-        id = 100 + studentNum;
+        this.id = id;
         this.lessons = lessons;
     }
 
-    public static void createStudent(ArrayList<Student> students) {
+    @Override
+    public boolean equals(Object obj) {
+        //return super.equals(obj);
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Student student = (Student) obj;
+        return id == student.getId();
+    }
+
+    @Override
+    public Student clone() {
+        try {
+            return (Student) super.clone();
+        }catch(CloneNotSupportedException e) {
+            System.out.println("Clone failed");
+            return null;
+        }
+    }
+
+    public static void createStudent(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
         Scanner scanForLesson = new Scanner(System.in);
         scan.useLocale(Locale.US);
@@ -48,8 +68,7 @@ public class Student {
             ArrayList<LessonType> lessonList = createLessonListForCreateStudent(scanForLesson.nextLine());
             newStudent.setLessons(lessonList);
 
-            Student.addStudent(students, newStudent);
-
+            db.addStudentToDatabase(newStudent);
         } catch (Exception e) {
             System.out.println("Invalid input. Please try again.");
             Student.deacreaseStudentNum();
@@ -73,19 +92,13 @@ public class Student {
         return lessonList;
     }
 
-    public static void addStudent(ArrayList<Student> students, Student newStudent) {
-        students.add(newStudent);
-        System.out.println("Student is created and added successfully.");
-        addGap(3);
-    }
-
-    public static void showAllStudents(ArrayList<Student> students) {
+    public static void showAllStudents(DatabaseOperations db) {
         printShowStudentTitle();
 
-        for (Student student : students) {
+        for (Student student : db.getStudentsFromDatabase()) {
             printStudent(student);
         }
-        addGap(3); // Todo (MK): addGap gibi bir metoda taşınabilir (her yerde kullanılan bir yapı bu. Yarın desem ki 3 değil 2 satır boşluk olsun, sadece bir yerde değiştirmen yeterli olur bu sayede)
+        addGap(3);
     }
 
     public static void showStudentList(ArrayList<Student> students) {
@@ -110,7 +123,7 @@ public class Student {
         System.out.println("Name   Surname   ID   GPA");
     }
 
-    public static void searchByGpaRange(ArrayList<Student> students) {
+    public static void searchByGpaRange(DatabaseOperations db) {
         double maxGPA;
         double minGPA;
 
@@ -125,10 +138,8 @@ public class Student {
             System.out.println("The max gpa cannot be less than min gpa. Please try again.");
         } else {
             printShowStudentTitle();
-            for (Student student : students) {
-                if (minGPA <= student.getGpa() && student.getGpa() <= maxGPA) {
-                    showStudent(student);
-                }
+            for (Student student : db.getStudentsFromDatabase("GPA >= " + minGPA + " AND GPA <= " + maxGPA)) {
+                printStudent(student);
             }
         }
     }
@@ -146,13 +157,6 @@ public class Student {
             return inputGpa();
         }
     }
-
-    public static void addTestStudents(ArrayList<Student> students) {
-        students.add(new Student("ALİ", "MUTLU", 3.50d, List.of(LessonType.FIZIK, LessonType.TURKCE)));
-        students.add(new Student("VELİ", "YILDIZ", 3.12d, List.of(LessonType.MATEMATIK, LessonType.TURKCE)));
-        students.add(new Student("SERCAN", "ŞEKER", 2.46d, List.of(LessonType.FIZIK, LessonType.MATEMATIK)));
-    }
-
 
     public static void showMenu() {
         System.out.println("1) Add a student.");
@@ -178,24 +182,24 @@ public class Student {
         }
     }
 
-    public static int selectMenuChoice(ArrayList<Student> students, int choice) {
+    public static int selectMenuChoice(DatabaseOperations db, int choice) {
         switch (choice) {
             case 1:
-                createStudent(students);
+                createStudent(db);
                 break;
             case 2:
                 int searchingChoice = inputSearchingChoice();
-                selectSearchingChoice(students,searchingChoice);
+                selectSearchingChoice(db, searchingChoice);
                 break;
             case 3:
-                showAllStudents(students);
+                showAllStudents(db);
                 break;
             case 4:
-                searchByGpaRange(students);
+                searchByGpaRange(db);
                 break;
             case 5:
-                int statistisChoice = inputStatisticsChoice();
-                selectStatisticsChoice(students,statistisChoice);
+                int statisticsChoice = inputStatisticsChoice();
+                selectStatisticsChoice(db,statisticsChoice);
                 break;
             case 6:
                 return  1;
@@ -223,51 +227,47 @@ public class Student {
 
         return inputChoice();
     }
-    public static void selectSearchingChoice(ArrayList<Student> students,int searchChoice) {
+    public static void selectSearchingChoice(DatabaseOperations db,int searchChoice) {
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
         switch (searchChoice) {
             case 1:
-                searchedStudents = searchingByName(students);
+                searchedStudents = searchingByName(db);
                 showStudentList(searchedStudents);
                 break;
             case 2:
-                searchedStudents = searchingBySurname(students);
+                searchedStudents = searchingBySurname(db);
                 showStudentList(searchedStudents);
                 break;
             case 3:
-                searchedStudents = searchingById(students);
-                showStudentList(searchedStudents);
+                Student student = searchingById(db);
+                showStudent(student);
                 break;
             case 4:
-                searchedStudents = searchingByLesson(students);
+                searchedStudents = searchingByLesson(db);
                 showStudentList(searchedStudents);
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 break;
         }
-
-        if (searchedStudents.isEmpty()) {
-            System.out.println("The student cannot be found. Please try again.");
-        }
-        addGap(3);
+        addGap(2);
     }
 
-    public static void selectStatisticsChoice(ArrayList<Student> students, int staticticsChoice) {
+    public static void selectStatisticsChoice(DatabaseOperations db, int staticticsChoice) {
         Student student;
         switch (staticticsChoice) {
             case 1:
-                printTotalStudentNumber();
+                printTotalStudentNumber(db);
                 break;
             case 2:
-                printAverageGPA(students);
+                printAverageGPA(db);
                 break;
             case 3:
-                student = findStudentHasMaxGPA(students);
+                student = findStudentHasMaxGPA(db);
                 showStudent(student);
                 break;
             case 4:
-                student = findStudentHasMinGPA(students);
+                student = findStudentHasMinGPA(db);
                 showStudent(student);
                 break;
             default:
@@ -277,61 +277,53 @@ public class Student {
     }
 
     // Todo (MK): search metotları Student dönsün
-    public static ArrayList<Student> searchingByName(ArrayList<Student> students) {
+    public static ArrayList<Student> searchingByName(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
+        String dbCondition;
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
 
         System.out.println("Enter the student name: ");
         String searchName = scan.next();
         searchName = searchName.toUpperCase();
+        dbCondition = "Firstname='" + searchName + "'";
         addGap(2);
 
-        for (Student student : students) {
-            if (searchName.equals(student.getName())) {
-                searchedStudents.add(student);
-            }
-        }
+        searchedStudents = db.getStudentsFromDatabase(dbCondition);
         return searchedStudents;
     }
 
-    public static ArrayList<Student> searchingBySurname(ArrayList<Student> students) {
+    public static ArrayList<Student> searchingBySurname(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
+        String dbCondition;
         ArrayList<Student> searchedStudents = new ArrayList<>();
 
         System.out.println("Enter the student surname: ");
         String searchSurname = scan.next();
         searchSurname = searchSurname.toUpperCase();
+        dbCondition = "Surname='" + searchSurname + "'";
         addGap(2);
         
-        for (Student student : students) {
-            if (searchSurname.equals(student.getSurname())) {
-                searchedStudents.add(student);
-            }
-        }
+        searchedStudents = db.getStudentsFromDatabase(dbCondition);
         return searchedStudents;
     }
 
-    public static ArrayList<Student> searchingById(ArrayList<Student> students) {
+    public static Student searchingById(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
-        ArrayList<Student> searchedStudents = new ArrayList<>();
+
         System.out.println("Enter the student ID: ");
         try {
             int searchID = scan.nextInt();
-            Student.printShowStudentTitle();
-            for (Student student : students) {
-                if (searchID == student.getId()) {
-                    searchedStudents.add(student);
-                }
-            }
+            return db.getOneStudentByID(searchID);
         } catch (Exception e) {
             System.out.println("Enter a decimal number. Please try again.");
+            return null;
         }
-        return searchedStudents;
     }
 
-    public static ArrayList<Student> searchingByLesson(ArrayList<Student> students) {
+    public static ArrayList<Student> searchingByLesson(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
+        String classID;
 
         System.out.println("Enter the lesson: ");
         String searchLesson = scan.next();
@@ -339,55 +331,30 @@ public class Student {
         searchLesson = searchLesson.toUpperCase();
         addGap(2);
 
-        printShowStudentTitle();
-
-        for (Student student : students) {
-            // Todo: (TT) Burada kaldım ve enumların içine title olarak Türkçe karakterlerle dersleri yazıp ona göre arama yapmak istiyorum.
-            for (LessonType lesson : student.getLessons()) {
-                if (lesson.getTitle().equals(searchLesson)) {
-                    searchedStudents.add(student);
-                }
+        for (LessonType lessonType : LessonType.values()) {
+            if (searchLesson.equals(lessonType.getTitle())) {
+                searchedStudents = db.getStudentsByClassID(lessonType.getClassID());
             }
         }
         return searchedStudents;
     }
 
-    public static void printTotalStudentNumber() {
-        System.out.println("Total number of students: " + getStudentNum());
+    public static void printTotalStudentNumber(DatabaseOperations db) {
+        System.out.println("Total number of students: " + db.getTotalNumberOfStudents());
         addGap(1);
     }
 
-    public static void printAverageGPA(ArrayList<Student> students) {
-        System.out.printf("The average gpa of all students: %.2f", calculateAverageGPA(students));
+    public static void printAverageGPA(DatabaseOperations db) {
+        System.out.printf("The average gpa of all students: %.2f", db.getAverageGpaOfStudents());
         addGap(1);
     }
 
-    public static double calculateAverageGPA(ArrayList<Student> students) {
-        double totalGPA = 0.0;
-        for (Student student : students) {
-            totalGPA += student.getGpa();
-        }
-        return totalGPA / getStudentNum();
+    public static Student findStudentHasMaxGPA(DatabaseOperations db) {
+        return db.getStudentHasMaxGpa();
     }
 
-    public static Student findStudentHasMaxGPA(ArrayList<Student> students) {
-        Student studentMaxGPA = students.getFirst();
-        for (Student student : students) {
-            if (student.getGpa() > studentMaxGPA.getGpa()) {
-                studentMaxGPA = student;
-            }
-        }
-        return studentMaxGPA;
-    }
-
-    public static Student findStudentHasMinGPA(ArrayList<Student> students) {
-        Student studentMinGPA = students.getFirst();
-        for (Student student : students) {
-            if (student.getGpa() < studentMinGPA.getGpa()) {
-                studentMinGPA = student;
-            }
-        }
-        return studentMinGPA;
+    public static Student findStudentHasMinGPA(DatabaseOperations db) {
+        return db.getStudentHasMinGpa();
     }
 
     public static void addGap(int numberOfGaps) {

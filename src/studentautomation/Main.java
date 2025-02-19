@@ -9,16 +9,14 @@ public class Main {
     public static void main(String[] args) throws Exception {
         int control = 0;
         int choice;
-        ArrayList<Student> students = new ArrayList<>();
-        Student.addTestStudents(students);
-
+        DatabaseOperations db = new DatabaseOperations();
         while (control != 1) {
 
             Student.showMenu();
 
             try {
                 choice = Student.inputChoice();
-                control = Student.selectMenuChoice(students, choice);
+                control = Student.selectMenuChoice(db, choice);
             } catch (NoSuchElementException e) {
                 // Todo (MK): inputChoice metodunun içinde zaten try-catch var gibi, buraya girdiği oluyor mu? olmuyorsa kaldıralım.
                 System.out.println("Line cannot be found.");
@@ -26,6 +24,4 @@ public class Main {
             }
         }
     }
-
-
 }
