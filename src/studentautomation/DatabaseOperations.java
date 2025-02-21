@@ -4,11 +4,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseOperations {
+public class DatabaseOperations implements StorageOperations{
     private static Connection connection;
-    private String url = "jdbc:mysql://localhost:3306/schooldatabase";
-    private String user = "root";
-    private String password = "sifre";
+    private String url = "jdbc:h2:mem:schooldb";
+    private String user = "sa";
+    private String password = "";
 
     public DatabaseOperations() {
         try {
@@ -20,11 +20,26 @@ public class DatabaseOperations {
         }
     }
 
-    public void addStudentToDatabase(Student student) {
+    public void createStudentTable() {
+        String sql = """
+                CREATE TABLE student (
+                	ID int NOT NULL AUTO_INCREMENT,
+                    FirstName varchar(30) NOT NULL,
+                    Surname varchar(35) NOT NULL,
+                    Grade int,
+                    GPA DECIMAL(3,2) DEFAULT 0.00,
+                    PRIMARY KEY (ID),
+                    CHECK (GPA >= 1.00 AND GPA <= 4.00),
+                    CHECK (Grade <= 4)
+                    );
+                """;
+    }
+
+    public void addStudent(Student student) {
         int studentID;
         studentID = addToStudentTable(student.getName(), student.getSurname(), student.getGpa());
         if (studentID != -1) {
-            addToStudent_ClassTable(studentID, student.getLessons());
+            fillIntermediateTable(studentID, student.getLessons());
         }
         else {
             System.out.println("Student not found");
@@ -60,7 +75,7 @@ public class DatabaseOperations {
         }
     }
 
-    public void addToStudent_ClassTable(int studentID, List<LessonType> lessons) {
+    private void fillIntermediateTable(int studentID, List<LessonType> lessons) {
         String addingQuery = "INSERT INTO student_class (studentID, classID) VALUES (?,?)";
         try {
             for (LessonType lesson : lessons) {
@@ -75,7 +90,7 @@ public class DatabaseOperations {
         }
     }
 
-    public Student getOneStudentByID(int studentID) {
+    public Student getStudentByID(int studentID) {
         String searchQuery = "SELECT * FROM student WHERE ID = ?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(searchQuery);
@@ -96,7 +111,7 @@ public class DatabaseOperations {
         }
     }
 
-    public ArrayList<Student> getStudentsFromDatabase() {
+    public ArrayList<Student> getStudents() {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         String searchQuery = "SELECT * FROM student ";
         try {
@@ -113,7 +128,7 @@ public class DatabaseOperations {
     }
     // Todo:(TT) Yukarıdaki metot bütün öğrencileri çeviriyor, aşağıdaki metot bir koşulla öğrenci çevirirken kullanılıyor
     // Todo:(TT) Yukarıdaki metodu overload ettim.
-    public ArrayList<Student> getStudentsFromDatabase(String condition) {
+    public ArrayList<Student> getStudents(String condition) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         String searchQuery = "SELECT * FROM student WHERE " + condition;
         try {
@@ -130,7 +145,7 @@ public class DatabaseOperations {
         }
     }
 
-    public ArrayList<LessonType> searchLessonsForAStudent(int studentID) {
+    public ArrayList<LessonType> searchLessonsForStudent(int studentID) {
         ArrayList<LessonType> lessons = new ArrayList<LessonType>();
         String searchQuery = "SELECT * FROM student_class WHERE StudentID = ?";
         try {
@@ -182,7 +197,7 @@ public class DatabaseOperations {
             String surname = resultSet.getString("Surname");
             double gpa = resultSet.getDouble("GPA");
             int id = resultSet.getInt("ID");
-            ArrayList<LessonType> lessons = searchLessonsForAStudent(id);
+            ArrayList<LessonType> lessons = searchLessonsForStudent(id);
             return new Student(name, surname, id, gpa, lessons);
         }
         catch (SQLException e) {
@@ -228,17 +243,17 @@ public class DatabaseOperations {
         }
     }
 
-    public Student getStudentHasMinGpa() {
+    public Student getMinGpaStudent() {
         String query = "SELECT * FROM student ORDER BY GPA ASC LIMIT 1";
-        return getOneStudentByQuery(query);
+        return getStudentByQuery(query);
     }
 
-    public Student getStudentHasMaxGpa() {
+    public Student getMaxGpaStudent() {
         String query = "SELECT * FROM student ORDER BY GPA DESC LIMIT 1";
-        return getOneStudentByQuery(query);
+        return getStudentByQuery(query);
     }
 
-    public Student getOneStudentByQuery(String query) {
+    public Student getStudentByQuery(String query) {
         try {
             ResultSet resultSet = statementOperation(query);
             if (resultSet.next()) {
