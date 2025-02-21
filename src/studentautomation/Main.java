@@ -10,6 +10,8 @@ public class Main {
         int control = 0;
         int choice;
         DatabaseOperations db = new DatabaseOperations();
+        ListOperations studentList = new ListOperations();
+
         while (control != 1) {
 
             Student.showMenu();
