@@ -68,7 +68,7 @@ public class Student implements Cloneable{
             ArrayList<LessonType> lessonList = createLessonListForCreateStudent(scanForLesson.nextLine());
             newStudent.setLessons(lessonList);
 
-            db.addStudentToDatabase(newStudent);
+            db.addStudent(newStudent);
         } catch (Exception e) {
             System.out.println("Invalid input. Please try again.");
             Student.deacreaseStudentNum();
@@ -95,7 +95,7 @@ public class Student implements Cloneable{
     public static void showAllStudents(DatabaseOperations db) {
         printShowStudentTitle();
 
-        for (Student student : db.getStudentsFromDatabase()) {
+        for (Student student : db.getStudents()) {
             printStudent(student);
         }
         addGap(3);
@@ -138,7 +138,7 @@ public class Student implements Cloneable{
             System.out.println("The max gpa cannot be less than min gpa. Please try again.");
         } else {
             printShowStudentTitle();
-            for (Student student : db.getStudentsFromDatabase("GPA >= " + minGPA + " AND GPA <= " + maxGPA)) {
+            for (Student student : db.getStudents("GPA >= " + minGPA + " AND GPA <= " + maxGPA)) {
                 printStudent(student);
             }
         }
@@ -288,7 +288,7 @@ public class Student implements Cloneable{
         dbCondition = "Firstname='" + searchName + "'";
         addGap(2);
 
-        searchedStudents = db.getStudentsFromDatabase(dbCondition);
+        searchedStudents = db.getStudents(dbCondition);
         return searchedStudents;
     }
 
@@ -303,7 +303,7 @@ public class Student implements Cloneable{
         dbCondition = "Surname='" + searchSurname + "'";
         addGap(2);
         
-        searchedStudents = db.getStudentsFromDatabase(dbCondition);
+        searchedStudents = db.getStudents(dbCondition);
         return searchedStudents;
     }
 
@@ -313,7 +313,7 @@ public class Student implements Cloneable{
         System.out.println("Enter the student ID: ");
         try {
             int searchID = scan.nextInt();
-            return db.getOneStudentByID(searchID);
+            return db.getStudentByID(searchID);
         } catch (Exception e) {
             System.out.println("Enter a decimal number. Please try again.");
             return null;
@@ -350,11 +350,11 @@ public class Student implements Cloneable{
     }
 
     public static Student findStudentHasMaxGPA(DatabaseOperations db) {
-        return db.getStudentHasMaxGpa();
+        return db.getMaxGpaStudent();
     }
 
     public static Student findStudentHasMinGPA(DatabaseOperations db) {
-        return db.getStudentHasMinGpa();
+        return db.getMinGpaStudent();
     }
 
     public static void addGap(int numberOfGaps) {
