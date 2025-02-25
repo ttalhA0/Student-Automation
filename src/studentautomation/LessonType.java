@@ -6,11 +6,11 @@ public enum LessonType {
     TURKCE ("TÜRKÇE", "TUR101");
 
     private String title;
-    private String classCode;
+    private String classID;
 
-    LessonType(String title, String classCode) {
+    LessonType(String title, String classID) {
         this.title = title;
-        this.classCode = classCode;
+        this.classID = classID;
     }
 
     public String getTitle() {
@@ -18,7 +18,7 @@ public enum LessonType {
     }
 
     public String getClassID() {
-        return classCode;
+        return classID;
     }
 }
 

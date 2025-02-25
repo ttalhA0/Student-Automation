@@ -1,14 +1,17 @@
 package studentautomation;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.*;
-
+@Getter
 public class Student implements Cloneable{
-
     private static int studentNum = 0;
     private int id;
     private String name;
     private String surname;
     private double gpa;
+    @Setter
     private List<LessonType> lessons;
 
     public Student() {
@@ -109,10 +112,8 @@ public class Student implements Cloneable{
     }
 
     public static void showStudent(Student student) {
-        // Todo (MK): printShowStudentTitle metodu buraya taşınabilir, yukarıdaki gibi (sonuçta aynı işin ayrılmaz bir parçası)
         Student.printShowStudentTitle();
         printStudent(student);
-
     }
 
     public static void printStudent(Student student) {
@@ -276,7 +277,6 @@ public class Student implements Cloneable{
         }
     }
 
-    // Todo (MK): search metotları Student dönsün
     public static ArrayList<Student> searchingByName(DatabaseOperations db) {
         Scanner scan = new Scanner(System.in);
         String dbCondition;
@@ -363,36 +363,16 @@ public class Student implements Cloneable{
         }
     }
 
-    public static int getStudentNum() {
-        return studentNum;
-    }
-
     public static void deacreaseStudentNum() {
         studentNum--;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String newName) {
         name = newName.toUpperCase();
     }
 
-    public String  getSurname() {
-        return surname;
-    }
-
     public void setSurname(String newSurname) {
         surname = newSurname.toUpperCase();
-    }
-
-    public double getGpa() {
-        return gpa;
     }
 
     public void setGpa(double newGpa) {
@@ -404,12 +384,8 @@ public class Student implements Cloneable{
         }
     }
 
-    public void setLessons(ArrayList<LessonType> lessonList) {
-        this.lessons = lessonList;
-    }
-
-    public List<LessonType> getLessons() {
-        return lessons;
+    public static int getStudentNum() {
+        return studentNum;
     }
 
 }
