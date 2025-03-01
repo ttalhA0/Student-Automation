@@ -7,7 +7,7 @@ public enum LessonType {
     MATEMATIK ("MATEMATİK", "MATH101"),
     TURKCE ("TÜRKÇE", "TUR101");
 
-    @Getter
+    @Getter // Todo (MK): neden field seviyesinde yazdık?
     private String title;
     @Getter
     private String classID;

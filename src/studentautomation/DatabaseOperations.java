@@ -221,6 +221,7 @@ public class DatabaseOperations implements StorageOperations {
 
     public ArrayList<Student> getStudentsByClassID(String classID) {
         ArrayList<Student> students = new ArrayList<>();
+        // Todo (MK): Neden üçlü tırnak kullanmadık?
         String searchQuery = "SELECT student.ID, student.FirstName, student.Surname, student.GPA " +
                 "FROM student " +
                 "INNER JOIN student_class ON student.ID = student_class.StudentID " +
@@ -322,7 +323,7 @@ public class DatabaseOperations implements StorageOperations {
         } catch (SQLException e) {
             System.out.println("An error occured while executing the statement");
             e.printStackTrace();
-            return null;
+            return null; // Todo (MK): hatayı yutmak mı istedik?
         }
     }
 

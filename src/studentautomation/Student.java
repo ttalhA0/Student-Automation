@@ -2,16 +2,20 @@ package studentautomation;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
 
-import java.util.*;
 @Getter
-public class Student implements Cloneable{
+public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden kullandık (dokümana ekle madem:)
+
     private static int studentNum = 0;
     private int id;
     private String name;
     private String surname;
     private double gpa;
-    @Setter
+    @Setter // Todo (MK): setter anotasyonu neden class seviyesinde değil
     private List<LessonType> lessons;
 
     public Student() {
@@ -29,7 +33,7 @@ public class Student implements Cloneable{
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj) { // Todo (MK): Bunu lombok yazmıyor mu
         //return super.equals(obj);
         if (this == obj) {
             return true;
@@ -42,7 +46,7 @@ public class Student implements Cloneable{
     }
 
     @Override
-    public Student clone() {
+    public Student clone() { // Todo (MK): Bunu lombok yazmıyor mu, ayrıca bu metodu neden override etmek istedik
         try {
             return (Student) super.clone();
         }catch(CloneNotSupportedException e) {
@@ -183,6 +187,16 @@ public class Student implements Cloneable{
         }
     }
 
+    /* Todo (MK): Bu metodun DatabaseOperations değil StorageOperations alması lazımdı
+        (abstraction yapmış olmamızın olayı bu zaten: bu metodu çağıran yerlerde farklı children'lar
+        verilse bile bu metodun değişmemesi lazım. Örneğin sen bu metodu çağırdığın yerde
+        ListOperations kullanmaya karar verdiğinde buradaki parametreyi de ListOperations olarak
+        değiştirmek zorunda kalacaksın, oysa burasa DatabaseOperations yerine parent olan
+        StorageOperations'ı parametre olarak verseydin, bu metodu çağıran yerdeki değişiklik
+        sebebiyle burayı değiştirmen gerekmeyecekti)
+        Bu arada bu class'ta DatabaseOperations alan tüm metotlar için yukarıda anlattığım geçerli,
+        yukarıda yazdığımı iyi anla,sonra da sil:)
+    */
     public static int selectMenuChoice(DatabaseOperations db, int choice) {
         switch (choice) {
             case 1:
@@ -384,6 +398,7 @@ public class Student implements Cloneable{
         }
     }
 
+    // Todo (MK): Lombok varsa bunu yazmaya gerek var mı?
     public static int getStudentNum() {
         return studentNum;
     }
