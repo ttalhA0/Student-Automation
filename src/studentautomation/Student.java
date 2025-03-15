@@ -2,13 +2,15 @@ package studentautomation;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
 @Getter
-public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden kullandık (dokümana ekle madem:)
+public class Student { // Todo (MK): Cloneable nedir? neden kullandık (dokümana ekle madem:)
+    // Todo (TT): Bunu clone metodunu yazmak için kullanmıştım, dokümanda object class kısmında değinmiştim.
 
     private static int studentNum = 0;
     private int id;
@@ -16,6 +18,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
     private String surname;
     private double gpa;
     @Setter // Todo (MK): setter anotasyonu neden class seviyesinde değil
+    // Todo (TT): id gibi set edilmesini istemediğim değişkenler var diye class seviyesinde yazmadım.
     private List<LessonType> lessons;
 
     public Student() {
@@ -31,10 +34,10 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         this.id = id;
         this.lessons = lessons;
     }
-
+    /*
     @Override
     public boolean equals(Object obj) { // Todo (MK): Bunu lombok yazmıyor mu
-        //return super.equals(obj);
+        //return super.equals(obj);        Todo (TT): Dokümanda bu konuyu yazarken yaptığım örnekti bu, eklemek istedim.
         if (this == obj) {
             return true;
         }
@@ -44,9 +47,12 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         Student student = (Student) obj;
         return id == student.getId();
     }
+    */
 
+    /*
     @Override
-    public Student clone() { // Todo (MK): Bunu lombok yazmıyor mu, ayrıca bu metodu neden override etmek istedik
+    public Student clone() { // Todo (MK): Bunu lombok yazmıyor mu, ayrıca bu metodu neden override etmek istedik.
+                             // Todo (TT): Dokümanda bu konuyu yazarken yaptığım örnekti bu, eklemek istedim.
         try {
             return (Student) super.clone();
         }catch(CloneNotSupportedException e) {
@@ -54,8 +60,9 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
             return null;
         }
     }
+     */
 
-    public static void createStudent(DatabaseOperations db) {
+    public static void createStudent(StorageOperations db) {
         Scanner scan = new Scanner(System.in);
         Scanner scanForLesson = new Scanner(System.in);
         scan.useLocale(Locale.US);
@@ -99,10 +106,10 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         return lessonList;
     }
 
-    public static void showAllStudents(DatabaseOperations db) {
+    public static void showAllStudents(StorageOperations db) {
         printShowStudentTitle();
 
-        for (Student student : db.getStudents()) {
+        for (Student student : db.getAllStudents()) {
             printStudent(student);
         }
         addGap(3);
@@ -128,7 +135,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         System.out.println("Name   Surname   ID   GPA");
     }
 
-    public static void searchByGpaRange(DatabaseOperations db) {
+    public static void searchByGpaRange(StorageOperations db) {
         double maxGPA;
         double minGPA;
 
@@ -143,7 +150,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
             System.out.println("The max gpa cannot be less than min gpa. Please try again.");
         } else {
             printShowStudentTitle();
-            for (Student student : db.getStudents("GPA >= " + minGPA + " AND GPA <= " + maxGPA)) {
+            for (Student student : db.getStudentsByGpaRange(minGPA, maxGPA)) {
                 printStudent(student);
             }
         }
@@ -156,8 +163,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         try {
             gpa = scan.nextDouble();
             return gpa;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Enter a double number. Please try again.");
             return inputGpa();
         }
@@ -175,7 +181,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
 
     public static int inputChoice() {
         System.out.println("Enter your choice: ");
-        Scanner scan  = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
 
         if (scan.hasNextInt()) {
             int input = scan.nextInt();
@@ -187,17 +193,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         }
     }
 
-    /* Todo (MK): Bu metodun DatabaseOperations değil StorageOperations alması lazımdı
-        (abstraction yapmış olmamızın olayı bu zaten: bu metodu çağıran yerlerde farklı children'lar
-        verilse bile bu metodun değişmemesi lazım. Örneğin sen bu metodu çağırdığın yerde
-        ListOperations kullanmaya karar verdiğinde buradaki parametreyi de ListOperations olarak
-        değiştirmek zorunda kalacaksın, oysa burasa DatabaseOperations yerine parent olan
-        StorageOperations'ı parametre olarak verseydin, bu metodu çağıran yerdeki değişiklik
-        sebebiyle burayı değiştirmen gerekmeyecekti)
-        Bu arada bu class'ta DatabaseOperations alan tüm metotlar için yukarıda anlattığım geçerli,
-        yukarıda yazdığımı iyi anla,sonra da sil:)
-    */
-    public static int selectMenuChoice(DatabaseOperations db, int choice) {
+    public static int selectMenuChoice(StorageOperations db, int choice) {
         switch (choice) {
             case 1:
                 createStudent(db);
@@ -214,10 +210,10 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
                 break;
             case 5:
                 int statisticsChoice = inputStatisticsChoice();
-                selectStatisticsChoice(db,statisticsChoice);
+                selectStatisticsChoice(db, statisticsChoice);
                 break;
             case 6:
-                return  1;
+                return 1;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 break;
@@ -242,7 +238,8 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
 
         return inputChoice();
     }
-    public static void selectSearchingChoice(DatabaseOperations db,int searchChoice) {
+
+    public static void selectSearchingChoice(StorageOperations db, int searchChoice) {
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
         switch (searchChoice) {
             case 1:
@@ -268,7 +265,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         addGap(2);
     }
 
-    public static void selectStatisticsChoice(DatabaseOperations db, int staticticsChoice) {
+    public static void selectStatisticsChoice(StorageOperations db, int staticticsChoice) {
         Student student;
         switch (staticticsChoice) {
             case 1:
@@ -291,7 +288,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         }
     }
 
-    public static ArrayList<Student> searchingByName(DatabaseOperations db) {
+    public static ArrayList<Student> searchingByName(StorageOperations db) {
         Scanner scan = new Scanner(System.in);
         String dbCondition;
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
@@ -299,14 +296,13 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         System.out.println("Enter the student name: ");
         String searchName = scan.next();
         searchName = searchName.toUpperCase();
-        dbCondition = "Firstname='" + searchName + "'";
         addGap(2);
 
-        searchedStudents = db.getStudents(dbCondition);
+        searchedStudents = db.getStudentsByName(searchName);
         return searchedStudents;
     }
 
-    public static ArrayList<Student> searchingBySurname(DatabaseOperations db) {
+    public static ArrayList<Student> searchingBySurname(StorageOperations db) {
         Scanner scan = new Scanner(System.in);
         String dbCondition;
         ArrayList<Student> searchedStudents = new ArrayList<>();
@@ -314,14 +310,13 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         System.out.println("Enter the student surname: ");
         String searchSurname = scan.next();
         searchSurname = searchSurname.toUpperCase();
-        dbCondition = "Surname='" + searchSurname + "'";
         addGap(2);
-        
-        searchedStudents = db.getStudents(dbCondition);
+
+        searchedStudents = db.getStudentsBySurname(searchSurname);
         return searchedStudents;
     }
 
-    public static Student searchingById(DatabaseOperations db) {
+    public static Student searchingById(StorageOperations db) {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Enter the student ID: ");
@@ -334,7 +329,7 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
         }
     }
 
-    public static ArrayList<Student> searchingByLesson(DatabaseOperations db) {
+    public static ArrayList<Student> searchingByLesson(StorageOperations db) {
         Scanner scan = new Scanner(System.in);
         ArrayList<Student> searchedStudents = new ArrayList<Student>();
         String classID;
@@ -347,27 +342,27 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
 
         for (LessonType lessonType : LessonType.values()) {
             if (searchLesson.equals(lessonType.getTitle())) {
-                searchedStudents = db.getStudentsByClassID(lessonType.getClassID());
+                searchedStudents = db.getStudentsByClassId(lessonType.getClassID());
             }
         }
         return searchedStudents;
     }
 
-    public static void printTotalStudentNumber(DatabaseOperations db) {
+    public static void printTotalStudentNumber(StorageOperations db) {
         System.out.println("Total number of students: " + db.getTotalNumberOfStudents());
         addGap(1);
     }
 
-    public static void printAverageGPA(DatabaseOperations db) {
+    public static void printAverageGPA(StorageOperations db) {
         System.out.printf("The average gpa of all students: %.2f", db.getAverageGpaOfStudents());
         addGap(1);
     }
 
-    public static Student findStudentHasMaxGPA(DatabaseOperations db) {
+    public static Student findStudentHasMaxGPA(StorageOperations db) {
         return db.getMaxGpaStudent();
     }
 
-    public static Student findStudentHasMinGPA(DatabaseOperations db) {
+    public static Student findStudentHasMinGPA(StorageOperations db) {
         return db.getMinGpaStudent();
     }
 
@@ -392,13 +387,13 @@ public class Student implements Cloneable { // Todo (MK): Cloneable nedir? neden
     public void setGpa(double newGpa) {
         if (newGpa >= 0 && newGpa <= 4) {
             gpa = newGpa;
-        }
-        else {
+        } else {
             System.out.println("Invalid GPA");
         }
     }
 
     // Todo (MK): Lombok varsa bunu yazmaya gerek var mı?
+    // Todo (TT): Denedim fakat olmadı. Araştırdığımda static değişken olduğu için olmayabileceğini gördüm.
     public static int getStudentNum() {
         return studentNum;
     }
