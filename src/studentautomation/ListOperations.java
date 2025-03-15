@@ -2,7 +2,7 @@ package studentautomation;
 
 import java.util.ArrayList;
 
-public class ListOperations implements StorageOperations{
+public class ListOperations implements StorageOperations {
     private ArrayList<Student> students;
 
     // Todo: (TT) Bu class'ı diğer database var diye kullanmadım sadece main'e ekledim.
@@ -24,17 +24,17 @@ public class ListOperations implements StorageOperations{
         return null;
     }
 
-    public ArrayList<Student> getStudentByName(String name) {
+    public ArrayList<Student> getStudentsByName(String name) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         for (Student student : students) {
             if (student.getName().equals(name)) {
-               searchedStudents.add(student);
+                searchedStudents.add(student);
             }
         }
         return searchedStudents;
     }
 
-    public ArrayList<Student> getStudentBySurname(String surname) {
+    public ArrayList<Student> getStudentsBySurname(String surname) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         for (Student student : students) {
             if (student.getSurname().equals(surname)) {
@@ -44,7 +44,7 @@ public class ListOperations implements StorageOperations{
         return searchedStudents;
     }
 
-    public ArrayList<Student> getStudentByGpaRange(double min, double max) {
+    public ArrayList<Student> getStudentsByGpaRange(double min, double max) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         for (Student student : students) {
             if (student.getGpa() >= min && student.getGpa() <= max) {
@@ -54,11 +54,11 @@ public class ListOperations implements StorageOperations{
         return searchedStudents;
     }
 
-    public ArrayList<Student> getStudents() {
+    public ArrayList<Student> getAllStudents() {
         return students;
     }
 
-    public ArrayList<Student> getStudentsByClassID(String classID) {
+    public ArrayList<Student> getStudentsByClassId(String classID) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         for (Student student : students) {
             for (LessonType lesson : student.getLessons()) {
@@ -100,7 +100,7 @@ public class ListOperations implements StorageOperations{
         return maxGpaStudent;
     }
 
-    public double calculateAverageGPA() {
+    private double calculateAverageGPA() {
         double totalGPA = 0;
         for (Student student : students) {
             totalGPA += student.getGpa();

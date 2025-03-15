@@ -103,7 +103,7 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    public int addToStudentTable(String name, String surname, Double gpa) {
+    private int addToStudentTable(String name, String surname, Double gpa) {
         String addingQuery = "INSERT INTO student (FirstName, Surname, GPA) VALUES (?,?,?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(addingQuery, Statement.RETURN_GENERATED_KEYS);
@@ -163,7 +163,7 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    public ArrayList<Student> getStudents() {
+    public ArrayList<Student> getAllStudents() {
         ArrayList<Student> searchedStudents = new ArrayList<>();
         String searchQuery = "SELECT * FROM student ";
         try {
@@ -178,25 +178,59 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    // Todo:(TT) Yukarıdaki metot bütün öğrencileri çeviriyor, aşağıdaki metot bir koşulla öğrenci çevirirken kullanılıyor
-    // Todo:(TT) Yukarıdaki metodu overload ettim.
-    public ArrayList<Student> getStudents(String condition) {
+    public ArrayList<Student> getStudentsByName(String name) {
         ArrayList<Student> searchedStudents = new ArrayList<>();
-        String searchQuery = "SELECT * FROM student WHERE " + condition;
+        String searchQuery = "SELECT * FROM student WHERE FirstName = ?";
         try {
-            ResultSet resultSet = statementOperation(searchQuery);
+            PreparedStatement preparedStatement = connection.prepareStatement(searchQuery);
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 searchedStudents.add(convertResultSetToStudent(resultSet));
             }
-            return searchedStudents;
         } catch (SQLException e) {
             System.out.println("The student could not be found");
             e.printStackTrace();
-            return null;
         }
+        return searchedStudents;
     }
 
-    public ArrayList<LessonType> searchLessonsForStudent(int studentID) {
+    public ArrayList<Student> getStudentsBySurname(String surname) {
+        ArrayList<Student> searchedStudents = new ArrayList<>();
+        String searchQuery = "SELECT * FROM student WHERE Surname = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(searchQuery);
+            preparedStatement.setString(1, surname);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                searchedStudents.add(convertResultSetToStudent(resultSet));
+            }
+        } catch (SQLException e) {
+            System.out.println("The student could not be found");
+            e.printStackTrace();
+        }
+        return searchedStudents;
+    }
+
+    public ArrayList<Student> getStudentsByGpaRange(double minGpa, double maxGpa) {
+        ArrayList<Student> searchedStudents = new ArrayList<>();
+        String searchQuery = "SELECT * FROM student WHERE GPA >= ? AND GPA <= ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(searchQuery);
+            preparedStatement.setDouble(1, minGpa);
+            preparedStatement.setDouble(2, maxGpa);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                searchedStudents.add(convertResultSetToStudent(resultSet));
+            }
+        } catch (SQLException e) {
+            System.out.println("The student could not be found");
+            e.printStackTrace();
+        }
+        return searchedStudents;
+    }
+
+    private ArrayList<LessonType> searchLessonsForStudent(int studentID) {
         ArrayList<LessonType> lessons = new ArrayList<LessonType>();
         String searchQuery = "SELECT * FROM student_class WHERE StudentID = ?";
         try {
@@ -219,13 +253,15 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    public ArrayList<Student> getStudentsByClassID(String classID) {
+    public ArrayList<Student> getStudentsByClassId(String classID) {
         ArrayList<Student> students = new ArrayList<>();
         // Todo (MK): Neden üçlü tırnak kullanmadık?
-        String searchQuery = "SELECT student.ID, student.FirstName, student.Surname, student.GPA " +
-                "FROM student " +
-                "INNER JOIN student_class ON student.ID = student_class.StudentID " +
-                "WHERE student_class.ClassID = ?";
+        String searchQuery = """
+                SELECT student.ID, student.FirstName, student.Surname, student.GPA 
+                FROM student 
+                INNER JOIN student_class ON student.ID = student_class.StudentID
+                WHERE student_class.ClassID = ?
+                """;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(searchQuery);
             preparedStatement.setString(1, classID);
@@ -241,7 +277,7 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    public Student convertResultSetToStudent(ResultSet resultSet) {
+    private Student convertResultSetToStudent(ResultSet resultSet) {
         try {
             String name = resultSet.getString("FirstName");
             String surname = resultSet.getString("Surname");
@@ -315,7 +351,7 @@ public class DatabaseOperations implements StorageOperations {
         }
     }
 
-    public ResultSet statementOperation(String query) {
+    private ResultSet statementOperation(String query) throws SQLException {
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -323,7 +359,8 @@ public class DatabaseOperations implements StorageOperations {
         } catch (SQLException e) {
             System.out.println("An error occured while executing the statement");
             e.printStackTrace();
-            return null; // Todo (MK): hatayı yutmak mı istedik?
+            throw e;
+            // Todo (MK): hatayı yutmak mı istedik?
         }
     }
 
