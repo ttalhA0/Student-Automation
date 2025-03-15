@@ -1,8 +1,7 @@
 package studentautomation;
 
-import java.util.ArrayList;
 // Todo (MK): Kullanılmayan import bırakmayalım (bir class'ta değişiklik yaptıktan sonra format çekmek faydalıdır)
-import java.util.NoSuchElementException;
+
 
 /* Todo (MK): Bu branch'i ana branch'e merge edebilirsin. Bundan sonra da farklı her iş için yeni
     branch açarak ilerleyelim, bu branch'te çok iş yapmışız. Yeni bir iş yapılacak diyelim:
@@ -19,18 +18,9 @@ public class Main {
         ListOperations studentList = new ListOperations();
 
         while (control != 1) {
-
             Student.showMenu();
-
-            try {
-                choice = Student.inputChoice();
-                control = Student.selectMenuChoice(db, choice);
-            } catch (NoSuchElementException e) {
-                // Todo (MK): Buna neden bakmadın:)
-                // Todo (MK): inputChoice metodunun içinde zaten try-catch var gibi, buraya girdiği oluyor mu? olmuyorsa kaldıralım.
-                System.out.println("Line cannot be found.");
-                throw new Exception("Hata var");
-            }
+            choice = Student.inputChoice();
+            control = Student.selectMenuChoice(db, choice);
         }
     }
 }

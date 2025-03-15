@@ -2,14 +2,14 @@ package studentautomation;
 
 import lombok.Getter;
 
+@Getter
 public enum LessonType {
-    FIZIK ("FİZİK", "PHYS121"),
-    MATEMATIK ("MATEMATİK", "MATH101"),
-    TURKCE ("TÜRKÇE", "TUR101");
+    FIZIK("FİZİK", "PHYS121"),
+    MATEMATIK("MATEMATİK", "MATH101"),
+    TURKCE("TÜRKÇE", "TUR101");
 
-    @Getter // Todo (MK): neden field seviyesinde yazdık?
+    // Todo (MK): neden field seviyesinde yazdık?
     private String title;
-    @Getter
     private String classID;
 
     LessonType(String title, String classID) {
